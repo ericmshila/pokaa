@@ -1,0 +1,140 @@
+:root {
+  --felt: #0e6b46;
+  --felt-dark: #063722;
+  --felt-edge: #0a4b30;
+  --panel: #ffffff;
+  --panel-border: #d8dee4;
+  --text: #1c2733;
+  --text-muted: #5b6b7a;
+  --accent: #d4a017;
+  --accent-bright: #e6b52c;
+  --danger: #c0392b;
+  --success: #2f9e5b;
+  --card-red: #c0392b;
+  --card-black: #1c2733;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.35);
+
+  /* Dark-panel-on-felt tokens — the recurring "a slightly lighter
+     green surface sitting on the felt" look used by the hand panel,
+     the game log, and similar in-table panels. Pulled out as tokens
+     (rather than each panel repeating its own rgba literal) so new
+     panels stay visually consistent by default. */
+  --panel-dark-bg: rgba(0, 0, 0, 0.2);
+  --panel-dark-border: rgba(255, 255, 255, 0.08);
+  --panel-dark-separator: rgba(255, 255, 255, 0.06);
+  /* Decorative-only gold, well below the brightness of --accent /
+     --accent-bright — for the thin table-edge lines and markers in
+     App.css, never for anything a player needs to read as a signal. */
+  --gold-decoration: rgba(230, 181, 44, 0.22);
+
+  color-scheme: light;
+  font-family: "Segoe UI", system-ui, Roboto, sans-serif;
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background-color: var(--felt-dark);
+  background-image:
+    radial-gradient(ellipse 900px 600px at 50% -10%, var(--felt) 0%, var(--felt-dark) 70%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.015) 0px,
+      rgba(255, 255, 255, 0.015) 1px,
+      transparent 1px,
+      transparent 7px
+    );
+  background-attachment: fixed;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2 {
+  margin: 0 0 12px;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 11px 20px;
+  background: linear-gradient(180deg, var(--accent-bright), var(--accent));
+  color: #2a1c00;
+  font-weight: 600;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15), 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.98);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+
+button.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+button.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+input {
+  font: inherit;
+  padding: 11px 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--panel-border);
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.2);
+}
+
+input::placeholder {
+  color: #9aa7b3;
+}

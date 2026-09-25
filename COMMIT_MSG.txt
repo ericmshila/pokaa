@@ -1,0 +1,99 @@
+feat: SQLite-backed per-room win scoreboard
+
+Persists a running tally of wins per room, surviving restarts/replays
+within the same room — per the request to add a DB now that the game
+could scale beyond one browser tab and to start tracking wins.
+
+Scope, deliberately: room-local, not account-scoped. Wins are tallied
+for the group currently playing together in one room code, not tied to
+any durable player identity across visits — matching how the app
+already works (join with a name, no login). A browser tab's player_id
+(sessionStorage-backed, see App.tsx) is stable across restarts of the
+SAME room while the tab stays open, which is exactly the scope this
+needed.
+
+Backend:
+
+- app/db.py (new): a thin, dependency-free sqlite3 wrapper — one
+  append-only table, game_results (one row per finished game), summed
+  into a per-room scoreboard on read. Player *names* are deliberately
+  not stored here; only winner_player_id. Names are resolved at read
+  time against the room's own live player list (GameRoom.players),
+  which is the single source of truth for "what is this player called
+  right now" — storing a second copy here would just go stale. DB path
+  is KADI_DB_PATH (default backend/data/kadi.db), read fresh on every
+  call so tests can override it per-test without a module reload.
+  Every call opens and closes its own short-lived connection, which
+  sidesteps sqlite3's thread-affinity rules given this gets called
+  both from FastAPI's sync-route threadpool and from the async
+  WebSocket handler via asyncio.to_thread.
+
+- app/game/game_results.py (new): maybe_record_game_result(room,
+  room_id, events) — shared by both the WebSocket path and the REST
+  debug endpoints so they can't quietly drift on what counts as a
+  finish. Inspects one action's events for GAME_FINISHED; classifies
+  ended_reason as "last_player_standing" if a PLAYER_ELIMINATED/
+  PLAYER_LEFT event rode along in the same batch (everyone else
+  forfeited/quit), else "finished" (someone actually played to an
+  empty, winning hand).
+
+- app/api/websocket.py: _broadcast_state — the single point every
+  state-changing WS action (a rules-engine move OR a restart) already
+  funnels through — now calls maybe_record_game_result before
+  re-serializing state, and every broadcast now carries the current
+  scoreboard.
+
+- app/api/routes.py: the REST play/draw/pass debug endpoints call the
+  same maybe_record_game_result for consistency with the WS path; GET
+  /rooms/{room_id} now includes the scoreboard too.
+
+- app/game/serializers.py: serialize_scoreboard resolves player_id ->
+  current display name; serialize_room_for_player always includes a
+  "scoreboard" key (empty list before any game in the room has
+  finished, never a missing key).
+
+- app/main.py: calls db.init_db() at startup (via a lifespan handler)
+  so a broken DB path/permissions problem surfaces on boot rather than
+  on whatever game happens to finish first.
+
+- backend/.gitignore (new): excludes the SQLite file(s) under
+  backend/data/ and __pycache__/ — didn't exist before this.
+
+Tests (all new, 141 total passing, up from 129):
+
+- tests/test_db.py: app.db in isolation (record/read-back, repeat wins
+  accumulating, sort order, per-room scoping, a null-winner row not
+  polluting anyone's tally) — no FastAPI, no rules engine.
+
+- tests/test_scoreboard.py: drives a REAL game to a finish through
+  room.apply() (via both the REST /play endpoint and the WebSocket
+  play_cards message — not by directly mutating room.state, which
+  would bypass the persistence hook entirely) and asserts a row lands
+  in game_results, the DB scoreboard reflects it, the WS broadcast's
+  room.scoreboard reflects it (resolved to a name), and that the tally
+  accumulates correctly across a room.restart() "play again". Also
+  covers the empty-scoreboard baseline and confirms a non-finishing
+  move records nothing.
+
+Frontend:
+
+- src/types.ts: RoomView gains scoreboard: ScoreboardEntryView[]
+  (player_id/name/wins), mirroring the backend's serializer output.
+
+- src/components/Scoreboard.tsx (new): a compact "wins this session"
+  strip — name/win-count pairs, names colored per playerColors.ts for
+  the same at-a-glance distinctness used in the opponent row and game
+  log. Renders nothing at all until the room's first game finishes, so
+  a fresh room's opening round doesn't show an empty/meaningless strip.
+
+- src/components/Table.tsx: renders <Scoreboard> just under the
+  opponent row.
+
+- src/App.css: matching styles, using the same dark-panel-on-felt
+  tokens (--panel-dark-bg/--panel-dark-border) as the game log and
+  hand panel, plus a small mobile-breakpoint size tweak.
+
+Verified: backend `pytest -q` -> 141 passed. Frontend `tsc -b`, `npm
+run build`, and `npm run lint` all clean. Also smoke-checked the live
+dev server boots, creates the SQLite file with the correct schema on
+startup, and starts with an empty scoreboard for a fresh room.

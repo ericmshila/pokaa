@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+node_modules/
+dist/
+build/
+.coverage
+.pytest_cache/
+
+# Vite build cache / local env overrides (not covered by the generic
+# patterns above, since they have suffixes rather than being an exact
+# match).
+.vite/
+.env.local
+.env.*.local

@@ -1,0 +1,1545 @@
+.app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 40px;
+}
+
+/* ---------------------------------------------------------------
+   Lobby
+   --------------------------------------------------------------- */
+
+.lobby {
+  width: 100%;
+  max-width: 420px;
+  background: var(--panel);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-lg);
+  text-align: left;
+  margin-top: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.lobby h1 {
+  font-size: 26px;
+  text-align: center;
+}
+
+.lobby h2 {
+  font-size: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.field input {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.lobby-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.join-row {
+  display: flex;
+  gap: 8px;
+}
+
+.join-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.room-code {
+  display: block;
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  padding: 12px;
+  margin: 8px 0 16px;
+  background: #f1f4f7;
+  border: 1px dashed var(--panel-border);
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+  color: var(--text);
+}
+
+.player-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px 8px 8px;
+  background: #f1f4f7;
+  border-radius: var(--radius-sm);
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--felt), var(--felt-edge));
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.you-badge {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+  background: rgba(212, 160, 23, 0.15);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 14px;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------
+   Table
+   --------------------------------------------------------------- */
+
+.status-line {
+  color: white;
+  margin-top: 60px;
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.status-line .error {
+  color: #ffb4a8;
+}
+
+.connection-banner {
+  background: rgba(192, 57, 43, 0.25);
+  border: 1px solid rgba(192, 57, 43, 0.6);
+  color: #ffe3de;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  animation: banner-in 0.2s ease;
+}
+
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.leave-link {
+  background: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  padding: 6px 4px;
+  box-shadow: none;
+}
+
+.leave-link:hover:not(:disabled) {
+  background: none;
+  box-shadow: none;
+  transform: none;
+  text-decoration: underline;
+}
+
+.lobby .leave-link {
+  color: var(--text-muted);
+  align-self: center;
+  margin-top: 4px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.table {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.table-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Purely decorative — a hairline gold rule with two small diamond
+   caps, echoing the felt-table inlay look, dropped in as an
+   aria-hidden div right under the top nav (see Table.tsx). No data,
+   no state, never intercepts a click (pointer-events: none), and its
+   1px height never displaces surrounding layout. */
+.table-divider {
+  position: relative;
+  height: 1px;
+  margin-top: -6px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-decoration) 15%,
+    var(--gold-decoration) 85%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.table-divider::before,
+.table-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  background: var(--gold-decoration);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.table-divider::before {
+  left: 14%;
+}
+
+.table-divider::after {
+  right: 14%;
+}
+
+/* Deliberately discouraging: a muted red/warning pill rather than the
+   neutral "just another button" treatment the rest of the topbar
+   gets, and it never grows brighter or lifts on hover the way a
+   normal button does — it should read as a serious, slightly
+   reluctant action, not an inviting one. */
+.forfeit-link {
+  background: rgba(192, 57, 43, 0.14);
+  color: #ff9a8d;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding: 7px 14px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(192, 57, 43, 0.35);
+  margin-right: auto;
+}
+
+.forfeit-link:hover:not(:disabled) {
+  background: rgba(192, 57, 43, 0.24);
+  box-shadow: inset 0 0 0 1px rgba(192, 57, 43, 0.55);
+  transform: none;
+  color: #ffb4a8;
+}
+
+.chat-toggle {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-sm);
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-toggle:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  transform: none;
+}
+
+.chat-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--felt-dark);
+}
+
+.chat-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: min(320px, calc(100vw - 32px));
+  max-height: min(420px, calc(100vh - 32px));
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 30, 22, 0.92);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 9;
+  overflow: hidden;
+}
+
+.chat-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chat-panel-header p {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.chat-panel-close {
+  background: none;
+  box-shadow: none;
+  padding: 4px 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.chat-panel-close:hover:not(:disabled) {
+  background: none;
+  box-shadow: none;
+  transform: none;
+  color: white;
+}
+
+.chat-panel-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 120px;
+}
+
+.chat-panel-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-panel-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+.chat-message {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.chat-message-name {
+  font-weight: 600;
+  color: var(--accent-bright);
+}
+
+.chat-message.own .chat-message-name {
+  color: #8fd6a8;
+}
+
+.chat-panel-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chat-panel-input input {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-panel-input button {
+  padding: 10px 14px;
+}
+
+.sound-toggle {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-sm);
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sound-toggle:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  transform: none;
+}
+
+.opponents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.opponent {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 96px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.opponent .avatar {
+  width: 44px;
+  height: 44px;
+  font-size: 17px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.08));
+  /* A quiet, always-on gold ring so every seat reads as "a player at
+     the table" even outside the current/up-next/tension states,
+     which each layer a stronger ring on top of this one. */
+  box-shadow: 0 0 0 2px rgba(230, 181, 44, 0.45);
+}
+
+.opponent.current {
+  border-color: var(--accent-bright);
+  background: rgba(212, 160, 23, 0.18);
+  box-shadow: 0 0 0 3px rgba(230, 181, 44, 0.18), var(--shadow-sm);
+  animation: turn-pulse 1.8s ease-in-out infinite;
+}
+
+.opponent.current .avatar {
+  background: linear-gradient(160deg, var(--accent-bright), var(--accent));
+  color: #2a1c00;
+}
+
+@keyframes turn-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(230, 181, 44, 0.18), var(--shadow-sm);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(230, 181, 44, 0.1), var(--shadow-sm);
+  }
+}
+
+.opponent .name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.opponent .count {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.opponent.eliminated {
+  opacity: 0.5;
+  animation: none;
+}
+
+.opponent.eliminated .count {
+  color: #ffb4a8;
+}
+
+/* Niko Kadi tension: someone is one card from winning. Distinct rose
+   tone (vs. the gold "current turn" pulse) so the two read as
+   different kinds of attention — whose turn it is vs. who's about to
+   end the game. */
+.opponent.niko-kadi-tension {
+  border-color: #ff6f91;
+  box-shadow: 0 0 0 3px rgba(255, 111, 145, 0.22), var(--shadow-sm);
+  animation: tension-pulse 1.3s ease-in-out infinite;
+}
+
+@keyframes tension-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(255, 111, 145, 0.22), var(--shadow-sm);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(255, 111, 145, 0.12), var(--shadow-sm);
+  }
+}
+
+.tension-badge {
+  display: inline-block;
+  font-size: 13px;
+  animation: tension-badge-bounce 1.3s ease-in-out infinite;
+}
+
+@keyframes tension-badge-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* Up next: a quieter, cooler cue than either of the above — this
+   player isn't under pressure yet, they're just the one to watch. */
+.opponent.up-next {
+  border-color: rgba(125, 211, 252, 0.8);
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.2), var(--shadow-sm);
+}
+
+.up-next-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+}
+
+.up-next-hint {
+  color: #7dd3fc !important;
+}
+
+/* The room-scoped running scoreboard (see Scoreboard.tsx / backend
+   app.db) — a single quiet strip of "name: wins" pills sitting just
+   under the opponent row. Uses the same dark-panel-on-felt tokens as
+   the game log/hand panel rather than the brighter, boxier ".opponent"
+   card treatment, since this is passive summary information (glanced
+   at, not interacted with) rather than another seat at the table. */
+.scoreboard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  justify-content: center;
+  background: var(--panel-dark-bg);
+  border: 1px solid var(--panel-dark-border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  align-self: center;
+}
+
+.scoreboard-icon {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.scoreboard-entry {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 13px;
+}
+
+.scoreboard-name {
+  font-weight: 600;
+}
+
+.scoreboard-wins {
+  color: rgba(255, 255, 255, 0.72);
+  font-variant-numeric: tabular-nums;
+}
+
+.scoreboard-wins::before {
+  content: "· ";
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Ambient table-wide signal: fires whenever ANY player is in Niko
+   Kadi tension, so the moment reads as shared, not just personal to
+   whoever declared. Deliberately subtle — a slow vignette breathing
+   at the table's own edges, not a flashing alert. */
+.table.niko-kadi-ambient {
+  animation: table-ambient-pulse 2.6s ease-in-out infinite;
+  border-radius: var(--radius-lg);
+}
+
+@keyframes table-ambient-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 111, 145, 0);
+  }
+  50% {
+    box-shadow: 0 0 32px 6px rgba(255, 111, 145, 0.12);
+  }
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  /* Subtle radial lighting behind the current card and turn state —
+     the "spotlight on the play" effect from the redesign brief. Kept
+     to the same low-alpha gold token as the divider above so it
+     never competes with the card/text sitting on top of it. */
+  background: radial-gradient(
+    ellipse 320px 220px at 50% 32%,
+    var(--gold-decoration),
+    transparent 72%
+  );
+}
+
+.discard-pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.discard-pile .playing-card {
+  position: relative;
+  z-index: 2;
+}
+
+/* Wraps the top discard card; keyed on `landingPulse` in Table.tsx so
+   it remounts (and this animation replays) every single time a card
+   is played, including repeats of the same card/rank — that's the
+   "yes, there it is" beat: something visibly LANDS on the pile. */
+.card-landing-wrap {
+  animation: card-landing 0.38s cubic-bezier(0.22, 1.1, 0.36, 1);
+}
+
+@keyframes card-landing {
+  0% {
+    transform: translateY(-26px) scale(0.82) rotate(-8deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(2px) scale(1.05) rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.discard-pile::before,
+.discard-pile::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 66px;
+  height: 92px;
+  background: #eef1f4;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.discard-pile::before {
+  transform: translate(-4px, 3px) rotate(-6deg);
+  z-index: 0;
+}
+
+.discard-pile::after {
+  transform: translate(4px, 2px) rotate(5deg);
+  z-index: 1;
+}
+
+.active-suit {
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.28);
+  padding: 5px 12px;
+  border-radius: 999px;
+  position: relative;
+  z-index: 2;
+  letter-spacing: 0.02em;
+}
+
+.draw-pile-count {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 600;
+  position: relative;
+  z-index: 2;
+  letter-spacing: 0.02em;
+  transition: color 0.3s ease;
+}
+
+/* The deck itself doesn't visibly thin out, so this is the whole
+   signal for "we're getting close to a reshuffle" — it should read
+   as mounting, not just informational, once it's actually low. */
+.draw-pile-count.low {
+  color: var(--accent-bright);
+}
+
+.draw-pile-count.critical {
+  color: #ff8a80;
+  animation: draw-pile-urgent 1.4s ease-in-out infinite;
+}
+
+@keyframes draw-pile-urgent {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Keyed on `pressurePulse` in Table.tsx so it remounts (and replays)
+   on every draw-pressure increase, not just the first. --pulse-scale
+   (set inline, driven by how many cards the stack just grew by) makes
+   a stacked Joker visibly hit harder than a lone 2 — the "punishment
+   is telegraphed" beat. */
+.draw-pressure-pulse {
+  --pulse-scale: 1.1;
+  display: inline-block;
+  color: #ffb199;
+  font-weight: 700;
+  animation: draw-pressure-tick 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+}
+
+@keyframes draw-pressure-tick {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(var(--pulse-scale));
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.table-status {
+  color: white;
+  text-align: center;
+}
+
+.table-status p {
+  font-size: 16px;
+}
+
+.table-status .winner {
+  font-size: 26px;
+  font-weight: 700;
+  background: linear-gradient(180deg, var(--accent-bright), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.table-status .hint {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* The big "YOUR TURN" / "Waiting on X" line — uppercase and heavier
+   than a plain .table-status p so it reads as the moment's headline,
+   with the "it's yours" state pulled out in accent gold specifically
+   (waiting-on-someone-else stays a calmer white). */
+.turn-status {
+  font-size: 19px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.turn-status.my-turn {
+  color: var(--accent-bright);
+}
+
+.play-again {
+  margin-top: 4px;
+}
+
+.action-bar {
+  display: flex;
+  gap: 10px;
+}
+
+.draw-cta {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 15px;
+  padding: 15px 30px;
+}
+
+.selection-bar {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.selection-bar .hint {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.selection-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.my-hand {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hand-label {
+  color: white;
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hand-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: help;
+}
+
+.hand-cards {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+}
+
+.my-hand .hint {
+  color: rgba(255, 255, 255, 0.65);
+  margin: 10px 0 0;
+}
+
+.my-hand.niko-kadi-tension {
+  border-color: #ff6f91;
+  animation: tension-pulse 1.3s ease-in-out infinite;
+}
+
+/* The persistent "GAME LOG" panel (see EventLog.tsx) — a header plus
+   a scrollable, accumulating row list, distinct from the old
+   ephemeral single-batch log this replaced. */
+.event-log-panel {
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.event-log-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  color: var(--accent-bright);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.event-log-icon {
+  font-size: 13px;
+}
+
+.event-log {
+  padding: 4px 16px;
+  max-height: 160px;
+  overflow-y: auto;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-log .hint {
+  margin: 10px 0;
+}
+
+.event-log-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.event-log-row:last-child {
+  border-bottom: none;
+}
+
+.event-log-row-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.event-log-row-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.event-log-row-time {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+}
+
+.event-log::-webkit-scrollbar {
+  width: 6px;
+}
+
+.event-log::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+.toast {
+  background: rgba(192, 57, 43, 0.95);
+  color: white;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  animation: toast-in 0.2s ease;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------------------------------------------------------------
+   Playing cards
+   --------------------------------------------------------------- */
+
+.playing-card {
+  width: 62px;
+  height: 88px;
+  border-radius: 9px;
+  background: #fdfdfc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  font-weight: 700;
+  flex-shrink: 0;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease,
+    filter 0.15s ease;
+}
+
+.playing-card.red {
+  color: var(--card-red);
+}
+
+.playing-card.black {
+  color: var(--card-black);
+}
+
+/* Jokers are genuinely red or black (see joker_color) — no separate
+   accent override here, or it would paint over that distinction for
+   every Joker regardless of which one it actually is. The small
+   "JOKER" caption below still gets its own accent-gold styling
+   (.joker-label), which doesn't touch this. */
+
+.playing-card .corner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.playing-card .corner-tl {
+  top: 6px;
+  left: 6px;
+}
+
+.playing-card .corner-br {
+  bottom: 6px;
+  right: 6px;
+  transform: rotate(180deg);
+}
+
+.playing-card .idx-rank {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.playing-card .idx-suit {
+  font-size: 10px;
+  margin-top: 1px;
+}
+
+.playing-card .center-pip {
+  font-size: 26px;
+  line-height: 1;
+  opacity: 0.92;
+}
+
+.playing-card.joker .center-pip {
+  font-size: 22px;
+}
+
+.playing-card .joker-label {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+button.playing-card.interactive {
+  padding: 0;
+}
+
+button.playing-card.interactive:hover:not(:disabled) {
+  transform: translateY(-8px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2), 0 12px 20px rgba(0, 0, 0, 0.22);
+  filter: none;
+}
+
+button.playing-card.interactive:active:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  filter: none;
+}
+
+button.playing-card.interactive:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+
+button.playing-card.selected {
+  transform: translateY(-10px);
+  box-shadow: 0 0 0 3px var(--accent-bright), 0 8px 14px rgba(0, 0, 0, 0.25);
+}
+
+button.playing-card.selected:hover:not(:disabled) {
+  transform: translateY(-12px);
+}
+
+/* A pure, POSITIVE-only hint (see legality.ts / PlayingCard.tsx) — a
+   gentle breathing glow on cards that are playable right now, never
+   a dimmed/desaturated treatment on the rest. There's deliberately no
+   "this card is illegal" visual anymore: seeing every unplayable
+   card go dull the instant it became your turn handed over the whole
+   hand's answer at a glance, leaving nothing to think about. Table.tsx
+   also withholds this class entirely for the first few seconds of
+   every new decision, so even this soft hint isn't instant.
+   .selected always wins over it, since "I've picked this one"
+   matters more than "was it a good idea". */
+.playing-card.legal-play:not(.selected) {
+  animation: legal-hint-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes legal-hint-glow {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 2px rgba(230, 181, 44, 0.28),
+      0 5px 10px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    /* "Ever so slightly" is the point — a couple percent of scale
+       reads as a heartbeat, not a bounce. */
+    transform: scale(1.025);
+    box-shadow: 0 0 0 2px rgba(230, 181, 44, 0.55),
+      0 5px 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+button.playing-card.legal-play:not(.selected):hover:not(:disabled) {
+  transform: translateY(-10px);
+  animation: none;
+  box-shadow: 0 0 0 2px rgba(230, 181, 44, 0.7),
+    0 8px 14px rgba(0, 0, 0, 0.22);
+}
+
+.playing-card.face-down {
+  background: repeating-linear-gradient(
+    45deg,
+    #1c2733,
+    #1c2733 4px,
+    #2a3948 4px,
+    #2a3948 8px
+  );
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.face-down-emblem {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+/* ---------------------------------------------------------------
+   Shuffle overlay — plays once when the table first mounts for a
+   freshly started game (see Table.tsx / ShuffleOverlay.tsx). A small
+   stack of face-down cards riffles outward and settles back into a
+   neat pile, then the whole overlay fades to reveal the real table.
+   --------------------------------------------------------------- */
+
+.shuffle-overlay {
+  width: 100%;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.shuffle-overlay.fading {
+  opacity: 0;
+}
+
+.shuffle-deck {
+  position: relative;
+  width: 62px;
+  height: 108px;
+}
+
+.shuffle-card {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: calc(var(--i) * 1);
+  animation: shuffle-riffle 1.1s ease-in-out both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+
+.shuffle-card .playing-card {
+  width: 62px;
+  height: 88px;
+}
+
+@keyframes shuffle-riffle {
+  0%,
+  100% {
+    transform: translate(-50%, calc(var(--i) * -2px)) rotate(0deg);
+  }
+
+  40% {
+    transform: translate(
+        calc(-50% + var(--dir) * 30px),
+        calc(var(--i) * -2px - 10px)
+      )
+      rotate(calc(var(--dir) * 9deg));
+  }
+
+  70% {
+    transform: translate(
+        calc(-50% + var(--dir) * -8px),
+        calc(var(--i) * -2px - 3px)
+      )
+      rotate(calc(var(--dir) * -3deg));
+  }
+}
+
+.shuffle-label {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  animation: shuffle-label-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes shuffle-label-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shuffle-card {
+    animation: none;
+  }
+
+  .shuffle-label {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Suit picker modal
+   --------------------------------------------------------------- */
+
+.suit-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: banner-in 0.15s ease;
+}
+
+.suit-picker {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  text-align: center;
+  width: 280px;
+  box-shadow: var(--shadow-lg);
+}
+
+.suit-picker p {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.suit-picker-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.suit-picker-options button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: #f1f4f7;
+  color: var(--text);
+  box-shadow: none;
+  padding: 14px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.suit-picker-options button:hover:not(:disabled) {
+  background: #e4e9ee;
+  box-shadow: none;
+  transform: translateY(-2px);
+}
+
+.suit-picker-options button.red {
+  color: var(--card-red);
+}
+
+.suit-picker-options button.black {
+  color: var(--card-black);
+}
+
+.suit-picker-options .symbol {
+  font-size: 22px;
+}
+
+.suit-picker .cancel {
+  background: none;
+  color: var(--text-muted);
+  box-shadow: none;
+}
+
+.suit-picker .cancel:hover:not(:disabled) {
+  background: none;
+  box-shadow: none;
+  text-decoration: underline;
+}
+
+.quit-confirm-title {
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.quit-confirm .hint {
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.quit-confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+/* "Keep playing" is the button someone reaching for an escape hatch
+   should actually land on — full-strength primary styling, listed
+   first. "Forfeit match" stays available but visually smaller and
+   muted so it never competes with it. */
+.keep-playing {
+  order: -1;
+}
+
+.btn-danger {
+  background: none;
+  color: var(--danger);
+  box-shadow: inset 0 0 0 1px rgba(192, 57, 43, 0.4);
+  font-size: 13px;
+  padding: 9px 16px;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: rgba(192, 57, 43, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(192, 57, 43, 0.6);
+  transform: none;
+}
+
+/* ---------------------------------------------------------------
+   Responsive — tablet: a lighter touch than desktop (smaller cards,
+   tighter spacing) without changing layout or document order.
+   --------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .app {
+    padding: 20px 14px 32px;
+  }
+
+  .table {
+    gap: 18px;
+  }
+
+  .opponent {
+    padding: 8px 12px;
+    min-width: 84px;
+  }
+
+  .opponent .avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+
+  .playing-card {
+    width: 56px;
+    height: 80px;
+  }
+
+  .playing-card .center-pip {
+    font-size: 22px;
+  }
+
+  .draw-cta {
+    padding: 13px 24px;
+    font-size: 14px;
+  }
+
+  .event-log {
+    max-height: 140px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Responsive — mobile: the hand switches to a horizontally
+   scrolling row instead of shrinking cards past a readable size, per
+   the redesign brief. Everything else keeps the same opponent panel
+   → current card → turn state → primary action → hand → log
+   document order already established above, which already matches
+   the requested mobile priority — nothing needed reordering.
+   --------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .app {
+    padding: 16px 10px 28px;
+  }
+
+  .table {
+    gap: 14px;
+  }
+
+  .table-topbar {
+    gap: 8px;
+  }
+
+  .opponents {
+    gap: 8px;
+  }
+
+  .opponent {
+    min-width: 72px;
+    padding: 7px 10px;
+  }
+
+  .opponent .name {
+    font-size: 12px;
+  }
+
+  .opponent .count {
+    font-size: 11px;
+  }
+
+  .scoreboard {
+    gap: 6px 10px;
+    padding: 7px 12px;
+  }
+
+  .scoreboard-entry {
+    font-size: 12px;
+  }
+
+  .turn-status {
+    font-size: 16px;
+  }
+
+  .table-status .winner {
+    font-size: 22px;
+  }
+
+  .action-bar {
+    width: 100%;
+  }
+
+  .draw-cta {
+    width: 100%;
+    padding: 14px 20px;
+  }
+
+  .playing-card {
+    width: 52px;
+    height: 74px;
+  }
+
+  .playing-card .center-pip {
+    font-size: 20px;
+  }
+
+  .lobby {
+    padding: 24px 20px;
+  }
+
+  /* Horizontal scroll instead of shrinking cards further or
+     wrapping them into a cramped grid — the same trick a physical
+     hand fan uses: spread wide, scroll to see the rest. */
+  .hand-cards {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .hand-cards .playing-card {
+    scroll-snap-align: start;
+  }
+
+  .hand-cards::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  .hand-cards::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+  }
+}

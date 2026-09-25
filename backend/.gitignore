@@ -1,0 +1,20 @@
+# SQLite persistence (app/db.py) — a local file, not source. See
+# db.py's module docstring: default path is backend/data/kadi.db,
+# overridable via KADI_DB_PATH.
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store

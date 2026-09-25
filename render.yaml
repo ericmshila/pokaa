@@ -1,0 +1,42 @@
+# Render Blueprint — deploys the whole app as two free services:
+# a Python web service for the FastAPI/WebSocket backend, and a
+# static site for the built React frontend. See docs/deploy.md for
+# the full step-by-step (this file alone isn't quite "click and
+# done" — the two services need each other's URL, which only exists
+# after the first deploy; deploy.md covers that two-pass dance).
+#
+# In the Render dashboard: New -> Blueprint -> point at this repo ->
+# Render reads this file and creates both services below.
+
+services:
+  - type: web
+    name: kadi-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # $PORT is set by Render at runtime (not a fixed port like the
+    # local dev run.py uses) — and no --reload here, unlike run.py,
+    # since that's a dev-only convenience.
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      # Wide open until the frontend's URL is known (see deploy.md
+      # step 1) — tighten this to the frontend's actual
+      # kadi-frontend.onrender.com URL once it exists, then redeploy.
+      - key: ALLOWED_ORIGINS
+        value: "*"
+
+  - type: web
+    name: kadi-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      # Placeholder — Vite bakes this in at BUILD time, so it must be
+      # set to the backend's real URL and the frontend rebuilt (not
+      # just restarted) once the backend has deployed and you know
+      # its URL. See deploy.md step 2.
+      - key: VITE_API_BASE_URL
+        value: "https://kadi-backend.onrender.com"
