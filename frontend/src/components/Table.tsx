@@ -462,6 +462,7 @@ export function Table({ roomId, playerId, onLeave }: TableProps) {
         <CurrentCard
           topCard={state.top_card}
           activeSuit={state.active_suit}
+          requiredSuit={state.required_suit}
           drawPileCount={state.draw_pile_count}
           landingPulse={landingPulse}
         />
