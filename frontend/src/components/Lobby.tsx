@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoom, getRoom, joinRoom, startGame } from "../api";
 import type { RoomSummary } from "../api";
+import { RulesReference } from "./RulesReference";
 
 function initialOf(name: string): string {
   return name.trim().charAt(0).toUpperCase() || "?";
@@ -229,6 +230,8 @@ export function Lobby({
       </div>
 
       {error && <p className="error">{error}</p>}
+
+      <RulesReference />
     </div>
   );
 }

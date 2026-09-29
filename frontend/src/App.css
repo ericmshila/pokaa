@@ -138,6 +138,65 @@
 }
 
 /* ---------------------------------------------------------------
+   Rules reference (Lobby)
+   --------------------------------------------------------------- */
+
+.rules-reference {
+  margin-top: 18px;
+}
+
+.rules-toggle {
+  width: 100%;
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--panel-border);
+}
+
+.rules-toggle:hover:not(:disabled) {
+  background: rgba(212, 160, 23, 0.08);
+}
+
+.rules-panel {
+  margin-top: 12px;
+  padding: 14px;
+  background: #f7f9fb;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+}
+
+.rules-search {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.rule-entry {
+  padding: 10px 12px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+}
+
+.rule-entry h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.rule-entry p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------
    Table
    --------------------------------------------------------------- */
 
