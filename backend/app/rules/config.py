@@ -62,67 +62,77 @@ class RuleConfig:
     ace_requires_declared_suit: bool = True
     ace_counters_punishments: bool = True
     ace_can_answer_question: bool = False
-    # An Ace can never be the literal WINNING play — it's still always
-    # playable, including as your last card (it just leaves you
-    # cardless rather than victorious; see finishable_ranks below for
-    # the full "which cards can end the game" rule and
-    # restrict_lone_card_to_finishable for the separate, opt-in
-    # question of whether a player may even be LEFT holding one as
-    # their only card).
-    ace_can_finish: bool = False
+    # Any legal card empties your hand and wins outright by default —
+    # see finishable_ranks below for the full "which cards can end the
+    # game" rule. This flag is what lets an Ace specifically take part
+    # in that; set False to carve the Ace back out as an exception
+    # without touching finishable_ranks itself.
+    ace_can_finish: bool = True
 
     # Joker is always playable regardless of the top card (no suit or
     # rank match required), like Ace — but unlike Ace, it doesn't
     # declare a suit; it triggers a draw-pressure punishment instead
-    # (see draw_ranks above).
+    # (see draw_ranks above) whenever it doesn't end the game outright
+    # (see joker_can_finish below).
     joker_can_answer_question: bool = False
-    joker_can_finish: bool = False
+    joker_can_finish: bool = True
 
     must_declare_niko_kadi: bool = True
     strict_niko_kadi: bool = True
     niko_kadi_penalty_cards: int = 2
 
-    # Traditional Kadi: only a plain, effect-free rank can literally
-    # WIN the game — every "power" rank (2/3/Joker's draw pressure,
-    # 8/Queen's question, Jack's skip, King's reverse, plus Ace, see
-    # ace_can_finish above) is excluded here on purpose. This is
-    # purely about winning, not playability: a power card is always a
-    # legal play, including as a player's very last card — see
-    # _commit_play_cards. Playing one down to zero cards just leaves
-    # that player cardless (their card's own effect — the punishment,
-    # the question, the skip, the declared suit — still lands on
-    # whoever's next) rather than ending the game; they're still an
-    # active player and simply draw back in on their next turn if
-    # they're still empty-handed by then. A player can also still be
-    # holding one of these when they're down to one card — see
-    # restrict_lone_card_to_finishable below, a distinct,
-    # separately-toggleable question from whether that card can
-    # actually complete the game.
+    # Any card empties your hand and wins outright by default — the
+    # simpler, traditional Kadi rule, and the one that actually
+    # matches what "Niko Kadi" promises ("I'm about to win"): a player
+    # who declares it while holding a lone 2, Joker, or any other
+    # power card really is one legal play away from winning, not
+    # stuck hoping to draw into a "safer" plain rank first. This is
+    # purely about winning, not playability — every card was already a
+    # legal play at any time, including as a player's very last one
+    # (see _commit_play_cards); this only decides whether doing so
+    # ends the game right there or just leaves the player cardless
+    # (their card's own effect — the punishment, the question, the
+    # skip, the declared suit — still lands on whoever's next, since a
+    # non-winning empty-hand play still resolves normally). A stricter
+    # ruleset can still narrow this back down — e.g. dropping the
+    # punishment ranks (2/3/8) so the round always keeps moving for at
+    # least one more play after a punishment — by overriding this set
+    # (and/or ace_can_finish/joker_can_finish) explicitly.
     finishable_ranks: set[Rank] = field(
         default_factory=lambda: {
+            Rank.TWO,
+            Rank.THREE,
             Rank.FOUR,
             Rank.FIVE,
             Rank.SIX,
             Rank.SEVEN,
+            Rank.EIGHT,
             Rank.NINE,
             Rank.TEN,
+            Rank.JACK,
+            Rank.QUEEN,
+            Rank.KING,
         }
     )
 
     # Every card is playable at the player's whim — including playing
-    # your way down to a lone power card (Ace/2/3/8/J/Q/K/Joker) that
-    # can never itself WIN the game (see finishable_ranks/
-    # ace_can_finish/joker_can_finish above). Left False (the
-    # default), a player is never blocked from reaching that state —
-    # they can always still play it (see _commit_play_cards), they
-    # just won't win the game by doing so; they'll be cardless until
-    # they draw or someone else changes the board. This matters beyond
-    # convenience: a future rule eliminating whoever holds the highest
-    # card value when the game ends (to discourage hoarding) only
-    # works if players are actually free to unload any card whenever
-    # they want, rather than being forced to keep "safe" plain cards
-    # in hand for a legal win. Set True to restore the older, stricter
-    # behavior that blocks reaching that state outright instead.
+    # your way down to a lone card that (under some OTHER, stricter
+    # ruleset than the default) can never itself WIN the game — see
+    # finishable_ranks/ace_can_finish/joker_can_finish above. Left
+    # False (the default), a player is never blocked from reaching
+    # that state — they can always still play it (see
+    # _commit_play_cards), they just won't win the game by doing so
+    # under such a ruleset; they'll be cardless until they draw or
+    # someone else changes the board. Under the default ruleset (every
+    # rank finishable) this flag is a no-op, since there's no
+    # unfinishable lone card left to block reaching. It matters once
+    # something is carved back out — e.g. a future rule eliminating
+    # whoever holds the highest card value when the game ends (to
+    # discourage hoarding) only works if players are actually free to
+    # unload any card whenever they want, rather than being forced to
+    # keep "safe" cards in hand for a legal win. Set True to restore
+    # the older, stricter behavior that blocks reaching that state
+    # outright instead.
     restrict_lone_card_to_finishable: bool = False
 
     # ---------------------------------------------------------

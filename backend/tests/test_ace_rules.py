@@ -89,13 +89,37 @@ def test_ace_can_answer_question_when_enabled_but_cannot_declare_a_suit():
     assert any(e.type == EventType.ACE_COUNTER_PLAYED for e in events)
 
 
-def test_ace_as_last_card_empties_hand_without_winning_by_default():
-    # An Ace can never be the literal WINNING play by default, but
-    # it's always a legal PLAY — even as the last card in hand. See
+def test_ace_as_last_card_wins_by_default():
+    # An Ace can win the game like any other card by default. See
     # tests/test_rules_engine.py for the twin of this test and
     # tests/test_finish_rules.py for the module-level explanation.
     rules = RuleConfig()
-    assert rules.ace_can_finish is False
+    assert rules.ace_can_finish is True
+
+    state = make_state(
+        hands={
+            "a": (Card(Rank.ACE, Suit.SPADES),),
+            "b": tuple(),
+        },
+        discard_pile=(Card(Rank.SEVEN, Suit.HEARTS),),
+    )
+
+    action = PlayCardsAction(
+        player_id="a",
+        type=ActionType.PLAY_CARDS,
+        cards=(Card(Rank.ACE, Suit.SPADES),),
+        declared_suit=Suit.CLUBS,
+    )
+
+    new_state, events = apply_move(state, action, rules)
+
+    assert new_state.phase == Phase.FINISHED
+    assert new_state.winner_id == "a"
+    assert any(e.type == EventType.PLAYER_WON for e in events)
+
+
+def test_ace_does_not_finish_when_explicitly_disabled():
+    rules = replace(RuleConfig(), ace_can_finish=False)
 
     state = make_state(
         hands={
@@ -119,27 +143,3 @@ def test_ace_as_last_card_empties_hand_without_winning_by_default():
     assert new_state.hand_of("a") == ()
     assert new_state.active_suit == Suit.CLUBS
     assert not any(e.type == EventType.PLAYER_WON for e in events)
-
-
-def test_ace_can_finish_when_explicitly_enabled():
-    rules = replace(RuleConfig(), ace_can_finish=True)
-
-    state = make_state(
-        hands={
-            "a": (Card(Rank.ACE, Suit.SPADES),),
-            "b": tuple(),
-        },
-        discard_pile=(Card(Rank.SEVEN, Suit.HEARTS),),
-    )
-
-    action = PlayCardsAction(
-        player_id="a",
-        type=ActionType.PLAY_CARDS,
-        cards=(Card(Rank.ACE, Suit.SPADES),),
-        declared_suit=Suit.CLUBS,
-    )
-
-    new_state, events = apply_move(state, action, rules)
-
-    assert new_state.phase == Phase.FINISHED
-    assert new_state.winner_id == "a"

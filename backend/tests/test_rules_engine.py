@@ -529,14 +529,12 @@ def test_can_finish_on_plain_card():
     assert any(event.type == EventType.PLAYER_WON for event in events)
 
 
-def test_ace_as_last_card_empties_hand_without_winning_by_default():
-    # Only a plain, effect-free rank can literally WIN the game by
-    # default (see RuleConfig.finishable_ranks/ace_can_finish) — but
-    # every card, including an Ace, is always a legal PLAY, even as a
-    # player's very last card. Playing it just leaves them cardless
-    # (their declared suit still lands on the next player) rather
-    # than winning outright. See tests/test_ace_rules.py for the
-    # explicitly-enabled variant.
+def test_ace_as_last_card_wins_by_default():
+    # Any card, including an Ace, wins the game outright by default
+    # when it empties the player's hand (see
+    # RuleConfig.finishable_ranks/ace_can_finish). See
+    # tests/test_ace_rules.py for the explicitly-disabled variant and
+    # tests/test_finish_rules.py for the module-level explanation.
     rules = RuleConfig()
 
     state = make_state(
@@ -558,19 +556,15 @@ def test_ace_as_last_card_empties_hand_without_winning_by_default():
 
     new_state, events = apply_move(state, action, rules)
 
-    assert new_state.phase != Phase.FINISHED
-    assert new_state.winner_id is None
-    assert new_state.hand_of("a") == ()
-    assert new_state.active_suit == Suit.CLUBS
-    assert new_state.current_player.id == "b"
-    assert not any(event.type == EventType.PLAYER_WON for event in events)
+    assert new_state.phase == Phase.FINISHED
+    assert new_state.winner_id == "a"
+    assert any(event.type == EventType.PLAYER_WON for event in events)
 
 
-def test_jack_as_last_card_empties_hand_without_winning_by_default():
-    # Jack is a power card (skip) and isn't in finishable_ranks by
-    # default — same story as the Ace above: always playable, even as
-    # the last card, just doesn't win. See tests/test_finish_rules.py
-    # for the explicitly-enabled variant.
+def test_jack_as_last_card_wins_by_default():
+    # Jack is a power card (skip), but it's still in finishable_ranks
+    # by default — same story as the Ace above. See
+    # tests/test_finish_rules.py for the explicitly-disabled variant.
     rules = RuleConfig()
 
     state = make_state(
@@ -591,8 +585,10 @@ def test_jack_as_last_card_empties_hand_without_winning_by_default():
 
     new_state, events = apply_move(state, action, rules)
 
-    assert new_state.phase == Phase.AWAITING_SKIP_RESPONSE
-    assert new_state.winner_id is None
+    # Winning short-circuits before the Jack's own skip effect would
+    # otherwise land on "b" — the round is over, so there's no "next
+    # player" left to skip.
+    assert new_state.phase == Phase.FINISHED
+    assert new_state.winner_id == "a"
     assert new_state.hand_of("a") == ()
-    assert new_state.pending_skip_player_id == "b"
-    assert not any(event.type == EventType.PLAYER_WON for event in events)
+    assert any(event.type == EventType.PLAYER_WON for event in events)

@@ -75,7 +75,7 @@ const RULES: RuleEntry[] = [
     id: "winning",
     title: "Winning a round",
     keywords: "finish last card power",
-    body: "You can play down to a single power card (2, 3, 8, Jack, Queen, King, Ace, or Joker) sitting alone in your hand, but you can't actually finish the game on one. Only a plain 4, 5, 6, 7, 9, or 10 can be your final, winning card — so with just a power card left, you're still waiting on the right finisher to show up.",
+    body: "Any legal card wins the round the moment it empties your hand — including a 2, 3, 8, Jack, Queen, King, Ace, or Joker. Answer a question with your very last card, or drop your last Joker on someone, and if that empties your hand, you've won: the round ends right there, before the card's own effect has a chance to land on anyone else.",
   },
   {
     id: "forfeit",
