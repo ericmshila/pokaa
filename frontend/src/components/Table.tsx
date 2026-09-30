@@ -7,6 +7,7 @@ import { QuitConfirm } from "./QuitConfirm";
 import { ChatPanel } from "./ChatPanel";
 import { EventLog } from "./EventLog";
 import { ShuffleOverlay } from "./ShuffleOverlay";
+import { NikoKadiBanner } from "./NikoKadiBanner";
 import { OpponentPanel } from "./OpponentPanel";
 import { Scoreboard } from "./Scoreboard";
 import { CurrentCard } from "./CurrentCard";
@@ -26,6 +27,14 @@ interface TableProps {
 // punishment card now (like a 2/3, just worth more), so it plays
 // immediately with no suit picker.
 const WILD_RANKS = new Set(["A"]);
+
+// Falls back to the raw id (rather than throwing/blanking) if the
+// player has somehow already dropped out of state.players by the
+// time their event's banner renders — a queued NikoKadiBanner (see
+// nikoKadiQueue above) can still be showing after someone leaves.
+function nameOfPlayer(state: GameStateView, playerId: string): string {
+  return state.players.find((p) => p.id === playerId)?.name ?? playerId;
+}
 
 // Who's next in turn order, skipping eliminated seats — mirrors
 // engine._calculate_next_index. Only meaningful (and only called)
@@ -113,6 +122,16 @@ export function Table({ roomId, playerId, onLeave }: TableProps) {
   // instant it becomes your turn — a moment to actually look at your
   // hand and think, not just react to what's lit up.
   const [hintsRevealed, setHintsRevealed] = useState(false);
+  // A queue rather than a single value — declarations are rare but
+  // not impossible to overlap (two players could each go down to one
+  // card close together), and each one deserves its own full,
+  // unmissable moment rather than getting stomped by the next. Table
+  // shows only the front of the queue at a time; NikoKadiBanner pops
+  // it once its own timer finishes (see NikoKadiBanner.tsx).
+  const [nikoKadiQueue, setNikoKadiQueue] = useState<
+    { key: number; playerId: string }[]
+  >([]);
+  const nikoKadiKeyRef = useRef(0);
 
   // Core-moment sound effects, driven straight off the same event
   // batch the EventLog renders — see sound.ts for what's covered
@@ -161,6 +180,18 @@ export function Table({ roomId, playerId, onLeave }: TableProps) {
           } else {
             sound.playLose();
           }
+          break;
+
+        case "niko_kadi_declared":
+          sound.playNikoKadi();
+          nikoKadiKeyRef.current += 1;
+          setNikoKadiQueue((queue) => [
+            ...queue,
+            {
+              key: nikoKadiKeyRef.current,
+              playerId: String(event.payload.player_id),
+            },
+          ]);
           break;
 
         case "game_started":
@@ -403,6 +434,17 @@ export function Table({ roomId, playerId, onLeave }: TableProps) {
         anyoneInNikoKadiTension ? "table niko-kadi-ambient" : "table"
       }
     >
+      {nikoKadiQueue[0] && (
+        <NikoKadiBanner
+          key={nikoKadiQueue[0].key}
+          playerId={nikoKadiQueue[0].playerId}
+          playerName={nameOfPlayer(state, nikoKadiQueue[0].playerId)}
+          onDone={() =>
+            setNikoKadiQueue((queue) => queue.slice(1))
+          }
+        />
+      )}
+
       <div className="table-topbar">
         {canQuit && (
           <button

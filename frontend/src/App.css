@@ -606,6 +606,124 @@
   }
 }
 
+/* Niko Kadi banner — a loud, table-wide, self-dismissing announcement
+   the moment anyone declares (see NikoKadiBanner.tsx), on top of the
+   quieter ambient/tension cues above. Fixed to the viewport (not the
+   table's own layout) so it's guaranteed visible regardless of scroll
+   position, and pointer-events: none since it's a heads-up, never
+   something that should intercept a click mid-game. */
+.niko-kadi-banner {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff6f91, #d4497a);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+    0 12px 32px rgba(0, 0, 0, 0.35),
+    0 0 40px 6px rgba(255, 111, 145, 0.45);
+  pointer-events: none;
+  opacity: 1;
+  animation: niko-kadi-banner-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translate(-50%, 0) scale(1);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.niko-kadi-banner.fading {
+  opacity: 0;
+  transform: translate(-50%, -12px) scale(0.96);
+}
+
+@keyframes niko-kadi-banner-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -24px) scale(0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, 4px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.niko-kadi-banner-icon {
+  font-size: 26px;
+  animation: niko-kadi-icon-spin 2.2s ease-in-out infinite;
+}
+
+@keyframes niko-kadi-icon-spin {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+.niko-kadi-banner-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.niko-kadi-banner-name {
+  font-weight: 700;
+  font-size: 15px;
+  /* Own color comes from colorForPlayer inline — this is just a dark
+     text-shadow so it stays legible against every one of those soft
+     palette colors sitting on the rose gradient background. */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.niko-kadi-banner-declare {
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.01em;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .niko-kadi-banner,
+  .niko-kadi-banner-icon {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .niko-kadi-banner {
+    left: 16px;
+    right: 16px;
+    top: 12px;
+    transform: none;
+    justify-content: center;
+  }
+
+  .niko-kadi-banner.fading {
+    transform: translateY(-8px) scale(0.97);
+  }
+
+  @keyframes niko-kadi-banner-in {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.85);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
 /* Up next: a quieter, cooler cue than either of the above — this
    player isn't under pressure yet, they're just the one to watch. */
 .opponent.up-next {

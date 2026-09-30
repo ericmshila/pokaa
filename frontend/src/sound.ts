@@ -8,10 +8,11 @@
  *
  * Only "core moment" events get a sound (see Table.tsx's effect that
  * calls into this module): a card being played, a forced/voluntary
- * draw, your turn starting, and the game ending. Everything else
- * (skip, reverse, question asked, Niko Kadi, ...) stays silent for
- * now rather than turning the log into constant noise — see the
- * EventLog for the full blow-by-blow instead.
+ * draw, your turn starting, the game ending, and a "Niko Kadi"
+ * declaration (deliberately louder than the rest — see
+ * playNikoKadi()). Everything else (skip, reverse, question asked,
+ * ...) stays silent for now rather than turning the log into constant
+ * noise — see the EventLog for the full blow-by-blow instead.
  */
 
 const MUTE_KEY = "kenyan-poker:sound-muted";
@@ -276,6 +277,29 @@ export function playYourTurn(): void {
       startTime: now + 0.1,
       duration: 0.18,
       peakGain: 0.16,
+    });
+  });
+}
+
+/**
+ * A bright, unmissable "ding-ding!" for a "Niko Kadi" declaration —
+ * deliberately more attention-grabbing than the other in-round cues
+ * (playCardPlayed, playYourTurn) since the whole point of the
+ * accompanying banner (see NikoKadiBanner.tsx) is that every player
+ * at the table notices it, not just the one who declared.
+ */
+export function playNikoKadi(): void {
+  play((audioCtx, destination) => {
+    const now = audioCtx.currentTime;
+    const notes = [1046.5, 1318.51]; // C6 E6 — a quick bright two-note ding
+
+    notes.forEach((frequency, index) => {
+      tone(audioCtx, destination, frequency, {
+        type: "triangle",
+        startTime: now + index * 0.14,
+        duration: 0.26,
+        peakGain: 0.22,
+      });
     });
   });
 }
